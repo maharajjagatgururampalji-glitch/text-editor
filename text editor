@@ -1,0 +1,193 @@
+!DOCTYPE <html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editor Style Customizer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="wrapper">
+    <h1 class="site-title">Editor Customizer</h1>
+    <p class="subtitle">Pick a box, style it your way.</p>
+
+    <div class="controls-bar">
+      <div class="control-group">
+        <label for="bgColor">Background</label>
+        <input type="color" id="bgColor" value="#ffffff" />
+      </div>
+      <div class="control-group">
+        <label for="textColor">Text Color</label>
+        <input type="color" id="textColor" value="#222222" />
+      </div>
+      <div class="control-group">
+        <label for="fontFamily">Font</label>
+        <select id="fontFamily">
+          <option value="'Segoe UI', sans-serif">Segoe UI</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Courier New', monospace">Courier New</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+          <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+        </select>
+      </div>
+      <button id="applyBtn">Apply to Selected</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div class="editors-grid">
+
+      <div class="editor-card">
+        <div class="card-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="card-label">Box 1</span>
+        </div>
+        <textarea class="editor-box" placeholder="Start typing here...">Hello! This is editor box one. Click to select it, then pick your styles above.</textarea>
+      </div>
+
+      <div class="editor-card">
+        <div class="card-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="card-label">Box 2</span>
+        </div>
+        <textarea class="editor-box" placeholder="Start typing here...">Editor box two is here. Try a different font or colour on this one.</textarea>
+      </div>
+
+      <div class="editor-card">
+        <div class="card-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="card-label">Box 3</span>
+        </div>
+        <textarea class="editor-box" placeholder="Start typing here...">Box three! Each box can have its own unique look — go wild.</textarea>
+      </div>
+
+      <div class="editor-card">
+        <div class="card-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="card-label">Box 4</span>
+        </div>
+        <textarea class="editor-box" placeholder="Start typing here...">The fourth editor. Mix and match styles across all four boxes.</textarea>
+      </div>
+
+    </div>
+
+    <p class="hint" id="hint">👆 Click any editor box to select it, then hit <strong>Apply</strong>.</p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html var activeBox = null;
+
+function pickBox(box) {
+  if (activeBox) {
+    activeBox.closest('.editor-card').classList.remove('selected');
+  }
+  activeBox = box;
+  box.closest('.editor-card').classList.add('selected');
+
+  // sync controls to whatever that box already has
+  document.getElementById('bgColor').value   = rgbToHex(box.style.backgroundColor  || '#ffffff');
+  document.getElementById('textColor').value = rgbToHex(box.style.color            || '#222222');
+
+  var currentFont = box.style.fontFamily || "'Segoe UI', sans-serif";
+  var sel = document.getElementById('fontFamily');
+  for (var i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === currentFont) {
+      sel.selectedIndex = i;
+      break;
+    }
+  }
+
+  document.getElementById('hint').textContent = '✅ Box selected! Adjust the controls and hit Apply.';
+}
+
+// wire up each textarea
+var boxes = document.querySelectorAll('.editor-box');
+boxes.forEach(function(box) {
+  box.addEventListener('focus', function() {
+    pickBox(box);
+  });
+  box.addEventListener('click', function() {
+    pickBox(box);
+  });
+});
+
+// apply button
+document.getElementById('applyBtn').addEventListener('click', function() {
+  if (!activeBox) {
+    alert('Click inside an editor box first to select it!');
+    return;
+  }
+  activeBox.style.backgroundColor = document.getElementById('bgColor').value;
+  activeBox.style.color           = document.getElementById('textColor').value;
+  activeBox.style.fontFamily      = document.getElementById('fontFamily').value;
+  document.getElementById('hint').textContent = '🎨 Styles applied!';
+});
+
+// reset button — clears the selected box only
+document.getElementById('resetBtn').addEventListener('click', function() {
+  if (!activeBox) {
+    alert('Select a box first.');
+    return;
+  }
+  activeBox.style.backgroundColor = '#ffffff';
+  activeBox.style.color           = '#222222';
+  activeBox.style.fontFamily      = "'Segoe UI', sans-serif";
+  document.getElementById('bgColor').value   = '#ffffff';
+  document.getElementById('textColor').value = '#222222';
+  document.getElementById('fontFamily').selectedIndex = 0;
+  document.getElementById('hint').textContent = '🔄 Box reset to default.';
+});
+
+// tiny helper: browser returns rgb(...) so we convert back to #hex for the colour picker
+function rgbToHex(rgb) {
+  if (!rgb || rgb === '' || rgb.charAt(0) === '#') return rgb || '#ffffff';
+  var parts = rgb.match(/\d+/g);
+  if (!parts || parts.length < 3) return '#ffffff';
+  return '#' +
+    ('0' + parseInt(parts[0]).toString(16)).slice(-2) +
+    ('0' + parseInt(parts[1]).toString(16)).slice(-2) +
+    ('0' + parseInt(parts[2]).toString(16)).slice(-2);
+}
+.{
+margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #f0f2f5;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  min-height: 100vh;
+}
+
+.wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+}
+
+.site-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 28px;
+}
